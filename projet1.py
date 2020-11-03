@@ -4,27 +4,22 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import statistics as st
 
-
-df = pd.read_csv("EIVP/EIVP_KM.csv", sep=';') #la fichier devient un dataframe, on l'affiche sans les ;
-#print(df) #on affiche le tableau
-
 from datetime import * #on importe le module date
 
-x=df['sent_at']
-print(x)
+df = pd.read_csv("projet_td1/EIVP_KM.csv", sep=';') #la fichier devient un dataframe, on l'affiche sans les ;
+#print(df) #on affiche le tableau
 
 
 
 def nouveau_temps(liste,start_date, end_date):
     n=len(x)
     i=0
-    while liste[0][:nb] < start_date:
+    while liste[0][:] < start_date:
         i=i+1
 
 
-
-
 #a[:nb] #prend les caractères les plus à gauche avant le premier espace
+
 
 x=df['sent_at'] #on extrait la colonne temps
 y=df['noise'] #on extrait la colonne noise
@@ -44,8 +39,5 @@ plt.show()
 
 
 #def graph_var_fonct_temps(variable):
-
-
-
 
 #http://www.xavierdupre.fr/app/ensae_teaching_cs/helpsphinx/notebooks/td2a_cenonce_session_1.html
