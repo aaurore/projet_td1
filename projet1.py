@@ -1,89 +1,71 @@
+##Imports
+
 import csv
 import numpy as np
 from matplotlib import pyplot as plt
 import pandas as pd
 import statistics as st
 
-
 from datetime import datetime as dt #on importe le module date
 
-df = pd.read_csv("projet_td1/EIVP_KM.csv", sep=';') #le fichier devient un dataframe, on l'affiche sans les ;
+##Ouverture du fichier
+
+df = pd.read_csv("projet_td1/EIVP_KM1.csv", sep=';') #le fichier devient un dataframe, on l'affiche sans les ;
 #print(df) #on affiche le tableau
 
-noise= df['noise']
+
+##Extractions des colonnes
+
+noise= df['noise'] #on extrait la colonne noise
 temperature = df['temp']
 humidity = df['humidity']
 lum = df['lum']
 co2 = df['co2']
 temps = df['sent_at'] #on extrait la colonne temps
 
-def graphique(variable):
+##Fonctions
+
+def graphique1(variable):
     plt.plot(temps,variable)
     plt.show()
 
 new_temps=[]
 for k in range(len(temps)):
-    new_temps.append(dt.strptime(temps[k],'%Y-%m-%d %H:%M:%S %z'))
+    new_temps.append(dt.strptime(temps[k],'%Y-%m-%d %H:%M:%S%z'))
 
 def graphique_datetime(variable):
     plt.plot(new_temps,variable)
+    plt.title("graphique de la variable en fonction du temps") #on ajoute un titre
+    plt.xlabel("temps")
+    plt.ylabel("variable entrée")
     plt.show()
-
 
 def trans():
     new_temps=[]
     for k in range(len(temps)):
        new_temps.append(dt.strptime(temps[k],'%Y-%m-%d %H:%M:%S %z'))
 
-
 def nouveau_temps(start_date, end_date):
     new_temps=dt
 
 
-def graphique_bis(variable, start_date, end_date):
-
-
-
-#def graphique2(variable, valeur):
-    p1 = plt.plot(temps, variable)
+def graphique2(variable, valeur):
+    p1 = plt.plot(new_temps, variable, color="blue", linewidth=0.7, linestyle="-", label="variable en fonction du temps")
     a=valeur(variable)
-    val = [a]*len(temps)
-    p2 = plt.plot(temps, val)
+    val = [a]*len(new_temps)
+    p2 = plt.plot(new_temps, val, color="red", linewidth=0.7, linestyle="-", label="valeur")
+    plt.legend(loc='upper right') #on ajoute une légende en haut à droite
     plt.show()
 
-def min(liste):
-    min = liste[0]
-    n= len(liste)
-    for i in range(n):
-        if liste[i]<min:
-            min=liste[i]
-    return min
 
+def indice_correlation(var1,var2):
+    ind= var1.corr(var2, method= 'pearson') #on choisit la méthode pearson (la plus adaptée dans le cas présent)
+    print(ind)
 
-def max(liste):
-    max = liste[0]
-    n= len(liste)
-    for i in range(n):
-        if liste[i]>max:
-            max=liste[i]
-    return max
-
-# x=df['sent_at'] #on extrait la colonne temps
-# y=df['noise'] #on extrait la colonne noise
-# p1=plt.plot(x,y)
-# a=st.mean(y)
-# z=[a]*len(x)
-# p2=plt.plot(x,z)
-# plt.show()
-#print(x)
-
-
-# p1=plt.plot(x,np.sin(x),marker='o')
-# p2=plt.plot(x,np.cos(x),marker='v')
-# plt.title("Fonctions trigonometriques")  # Problemes avec accents (plot_directive) !
-# plt.legend([p1, p2], ["Sinus", "Cosinus"])
-# plt.show()
-
-
-
-#http://www.xavierdupre.fr/app/ensae_teaching_cs/helpsphinx/notebooks/td2a_cenonce_session_1.html
+def graph_corr(var1, var2):
+    p1=plt.plot(new_temps, var1, color="blue")
+    p2=plt.plot(new_temps,var2, color="orange")
+    a=indice_correlation(var1, var2)
+    print(len(var1))
+    p3=plt.plot(new_temps, cor, color="red")
+    plt.show()
