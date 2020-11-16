@@ -15,6 +15,7 @@ df = pd.read_csv("projet_td1/EIVP_KM1.csv", sep=';') #le fichier devient un data
 
 ##Extractions des colonnes
 
+id = df['id']
 noise= df['noise'] #on extrait la colonne noise
 temperature = df['temp']
 humidity = df['humidity']
@@ -23,6 +24,26 @@ co2 = df['co2']
 temps = df['sent_at'] #on extrait la colonne temps
 
 ##Fonctions
+
+def capteur(variable,nb):
+    #Cette fonction a été testée et marche. Elle donne la liste variable pour le capteur nb uniquement.
+    capteur_nb=[]
+    x=0
+    while Id[x]!=nb:
+        x+=1
+    k=x
+    while Id[k]==nb and k<7879 : #on met une condition d'arrêt avecle nombre total d'indice pour obtenir le tps du capteur 6
+        capteur_nb.append(variable[k])
+        k+=1
+    return(capteur_nb)
+
+temps1=capteur(temps,1)
+temps2=capteur(temps,2)
+temps3=capteur(temps,3)
+temps4=capteur(temps,4)
+temps5=capteur(temps,5)
+temps6=capteur(temps,6)
+
 
 def graphique(variable):
     plt.plot(temps,variable)
