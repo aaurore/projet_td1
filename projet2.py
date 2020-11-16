@@ -15,11 +15,11 @@ df = pd.read_csv("projet_td1/EIVP_KM1.csv", sep=';') #le fichier devient un data
 
 ##Extractions des colonnes
 
-id=df['id']
+identity=df['id']
 noise= df['noise'] #on extrait la colonne noise
 temperature = df['temp']
 humidity = df['humidity']
-lum = df['lum']
+luminosity = df['lum']
 co2 = df['co2']
 temps = df['sent_at'] #on extrait la colonne temps
 
@@ -29,10 +29,10 @@ def capteur(variable,nb):
     #Cette fonction a été testée et marche. Elle donne la liste variable pour le capteur nb uniquement.
     capteur_nb=[]
     x=0
-    while id[x]!=nb:
+    while identity[x]!=nb:
         x+=1
     k=x
-    while id[k]==nb and k<7879 : #on met une condition d'arrêt avecle nombre total d'indice pour obtenir le tps du capteur 6
+    while identity[k]==nb and k<7879 : #on met une condition d'arrêt avec le nombre total d'indices pour obtenir le temps du capteur 6
         capteur_nb.append(variable[k])
         k+=1
     return(capteur_nb)
@@ -50,6 +50,11 @@ def graphique(variable):
         plt.plot(capteur(temps,i),capteur(variable,i))
     plt.show()
 
+def new_temps(i):
+    new_temps=[]
+    for k in range(len(capteur(temps,i))):
+        new_temps.append(dt.strptime(temps[k],'%Y-%m-%d %H:%M:%S%z'))
+    return new_temps
 
 new_temps1=[]  #il faudrait peut être créer une fonction qui donne new_temps(i) je pense
 for k in range(len(temps1)):
@@ -75,6 +80,9 @@ new_temps6=[]
 for k in range(len(temps6)):
     new_temps6.append(dt.strptime(temps6[k],'%Y-%m-%d %H:%M:%S%z'))
 
+new_temps_tot=[]
+for k in range(len(temps)):
+    new_temps_tot.append(dt.strptime(temps[k],'%Y-%m-%d %H:%M:%S%z'))
 
 def graphique_datetime(variable,new_t):
     plt.plot(new_t,variable)
@@ -84,12 +92,12 @@ def graphique_datetime(variable,new_t):
     plt.show()
 
 def graphique_par_capteurs(variable):
-    plt.plot(new_temps1,capteur(variable,1), label='capteur1')
-    plt.plot(new_temps2,capteur(variable,2), label='capteur2')
-    plt.plot(new_temps3,capteur(variable,3), label='capteur3')
-    plt.plot(new_temps4,capteur(variable,4), label='capteur4')
-    plt.plot(new_temps5,capteur(variable,5), label='capteur5')
-    plt.plot(new_temps6,capteur(variable,6), label='capteur6')
+    plt.plot(new_temps1,capteur(variable,1), color='orange', label='capteur 1')
+    plt.plot(new_temps2,capteur(variable,2), color='black', label='capteur 2')
+    plt.plot(new_temps3,capteur(variable,3), color='blue', label='capteur 3')
+    plt.plot(new_temps4capteur(variable,4), color='red', label='capteur 4')
+    plt.plot(new_temps5,capteur(variable,5), color='magenta', label='capteur 5')
+    plt.plot(new_temps6,capteur(variable,6), color='forestgreen', label='capteur 6')
     plt.legend()
     plt.show()
 
@@ -100,11 +108,27 @@ def nouveau_temps(start_date, end_date,new_t):
     date_new_temps_k = new_t[k].strftime('%Y-%m-%d') #On transforme les éléments de la liste new_temps au même format que strat_date et end_date
     while date_new_temps_k != start_date :
         k+=1
+        date_new_temps_k = new_t[k].strftime('%Y-%m-%d')
     k_start = k
     while date_new_temps_k != end_date :
         k+=1
+        date_new_temps_k = new_t[k].strftime('%Y-%m-%d')
     k_end = k
     return([new_t[k] for k in range(k_start, k_end +1)])
+
+
+def nouveau_temps_bis(start_date, end_date, temps):
+    nouveau=[]
+    start= dt.strptime(start_date,'%Y-%m-%d')
+    end= dt.strptime(end_date, '%Y-%m-%d')
+    for i in temps:
+         tp = i.strftime('%Y-%m-%d')
+         if tp>=start and tp<= end:
+             nouveau.append(i)
+    return nouveau
+
+
+
 
 
 def graphique2(variable, valeur, new_t):
@@ -122,26 +146,40 @@ def graphique_valeur_capteur(variable, capteur):
     plt.plot(new_temps(i),valeur)
     plt.show()
 
-
 def indice_correlation(var1,var2):
     ind= var1.corr(var2, method= 'pearson') #on choisit la méthode pearson (la plus adaptée dans le cas présent)
     print(ind)
 
+moyenne = st.mean #on veut la moyenne arithmétique
+mediane = st.median
+variance = st.variance
+ecart_type = st.stdev
 
-def graph_corr(var1, var2, new_t):
-    p1=plt.plot(new_t, var1, color="blue")
-    p2=plt.plot(new_t,var2, color="orange")
+
+def graph_corr(var1, var2):
+    p1=plt.plot(new_temps_tot, var1, color="blue")
+    p2=plt.plot(new_temps_tot,var2, color="orange")
     a=indice_correlation(var1, var2)
-    print(len(var1))
-    p3=plt.plot(new_t, cor, color="red")
+    p3=plt.plot(new_temps_tot, a, color="red")
     plt.show()
 
-def humidex(Ta,Hr): #il faut que ton programme donne une valeur sans rien entrer dedans je crois car ces valeurs là sont dans le csv
+def graph_corr_capteur(var1, var2, numcapt):
+    plt.plot(temps(numcapteur), capteur(var1, numcapt), color="blue")
+    plt.plot(new_temps_tot,capteur(var2, numcapt), color="orange")
+    a=indice_correlation(var1, var2)
+    print(len(var1))
+    plt.plot(new_temps_tot, cor, color="red")
+    plt.show()
 
-    #Ta = tampérature ambiante
+
+def humidex(Ta,Hr):
+
+    #Ta = température ambiante
     #Hr = humidité relative
 
     x=7.5*Ta/(237.7+Ta)
     y=6.112*Hr/100
 
     return(Ta+(y*(10**x)-10)*5/9)
+
+
