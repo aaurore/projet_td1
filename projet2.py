@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import statistics as st
 
-from datetime import datetime as dt #on importe le module date
+from datetime import datetime as dt #on importe le module date pour pouvoir les comparer par la suite
 
 ##Ouverture du fichier
 
@@ -50,13 +50,7 @@ def graphique(variable):
         plt.plot(capteur(temps,i),capteur(variable,i))
     plt.show()
 
-def new_temps(i):
-    new_temps=[]
-    for k in range(len(capteur(temps,i))):
-        new_temps.append(dt.strptime(temps[k],'%Y-%m-%d %H:%M:%S%z'))
-    return new_temps
-
-new_temps1=[]  #il faudrait peut être créer une fonction qui donne new_temps(i) je pense
+new_temps1=[]
 for k in range(len(temps1)):
     new_temps1.append(dt.strptime(temps1[k],'%Y-%m-%d %H:%M:%S%z'))
 
@@ -95,60 +89,124 @@ def graphique_par_capteurs(variable):
     plt.plot(new_temps1,capteur(variable,1), color='orange', label='capteur 1')
     plt.plot(new_temps2,capteur(variable,2), color='black', label='capteur 2')
     plt.plot(new_temps3,capteur(variable,3), color='blue', label='capteur 3')
-    plt.plot(new_temps4capteur(variable,4), color='red', label='capteur 4')
+    plt.plot(new_temps4,capteur(variable,4), color='red', label='capteur 4')
     plt.plot(new_temps5,capteur(variable,5), color='magenta', label='capteur 5')
     plt.plot(new_temps6,capteur(variable,6), color='forestgreen', label='capteur 6')
-    plt.legend()
+    plt.legend(loc='upper right')
     plt.show()
 
-def nouveau_temps(start_date, end_date,new_t):
-    #il faut rentrer le new_temps correspondant au capteur étudié car tous les capteurs ne commencent pas au même moment
-    "format YYYY-MM-DD"
-    k = 0
-    date_new_temps_k = new_t[k].strftime('%Y-%m-%d') #On transforme les éléments de la liste new_temps au même format que strat_date et end_date
-    while date_new_temps_k != start_date :
-        k+=1
-        date_new_temps_k = new_t[k].strftime('%Y-%m-%d')
-    k_start = k
-    while date_new_temps_k != end_date :
-        k+=1
-        date_new_temps_k = new_t[k].strftime('%Y-%m-%d')
-    k_end = k
-    return([new_t[k] for k in range(k_start, k_end +1)])
-
-
-def nouveau_temps_bis(start_date, end_date, temps):
+def nouveau_temps(start_date, end_date, temps):
+    'il faut entrer le new_temps correspondant au capteur étudié car tous les capteurs ne commencent pas au même moment'
+    'format des dates: YYYY-MM-DD'
     nouveau=[]
-    start= dt.strptime(start_date,'%Y-%m-%d')
-    end= dt.strptime(end_date, '%Y-%m-%d')
     for i in temps:
-         tp = i.strftime('%Y-%m-%d')
-         if tp>=start and tp<= end:
+         tp = i.strftime('%Y-%m-%d') #on transforme les éléments de la liste temps au même format que strat_date et end_date pour pouvoir ensuite les comparer
+         if tp>=start_date and tp<= end_date:
              nouveau.append(i)
     return nouveau
 
 
+def tri1(variable,start_date, end_date):
+    liste=[]
+    j=0
+    temps_tri= nouveau_temps(start_date, end_date, new_temps1)
+    for i in temps_tri:
+        while new_temps_tot[j] != i:
+            j = j+1
+        liste.append(variable[j])
+        j=0
+    return liste
+
+def tri4(variable,start_date, end_date):
+    liste=[]
+    j=0
+    temps_tri= nouveau_temps(start_date, end_date, new_temps4)
+    for i in temps_tri:
+        while new_temps_tot[j] != i:
+            j = j+1
+        liste.append(variable[j])
+        j=0
+    return liste
+
+def variable_bornes_capteur(variable,start_date, end_date, nbcapt):
+    liste=[]
+    j=0
+    if nbcapt == 1:  #le cas par cas est obligatoire car la fonction new_temps(i) ne fonctionne pas correctement
+        temps= new_temps1
+    elif nbcapt == 2:
+        temps = new_temps2
+    elif nbcapt == 3:
+        temps = new_temps3
+    elif nbcapt == 4:
+        temps = new_temps4
+    elif nbcapt == 5:
+        temps = new_temps5
+    elif nbcapt == 6:
+        temps = new_temps6
+    temps_bornes= nouveau_temps(start_date, end_date, temps)
+    for i in temps_bornes:
+        while new_temps_tot[j] != i:
+            j = j+1
+        liste.append(variable[j])
+        j=0
+    return liste
+
+
+def graphique_par_capteurs_bornes(variable, start_date, end_date):
+    #si on met le 12/08 en date de fin, il s'arrêtera le 12/08 à 23h59
+    plt.plot(nouveau_temps(start_date, end_date, new_temps1), variable_bornes_capteur(variable, start_date, end_date, 1), color='orange', label='capteur 1') #on affiche la variable raccourcie par rapport au temps avec les bornes données, les 2 listes auront la même dimension et on peut les afficher
+    plt.plot(nouveau_temps(start_date, end_date, new_temps2), variable_bornes_capteur(variable, start_date, end_date, 2), color='black', label='capteur 2')
+    plt.plot(nouveau_temps(start_date, end_date, new_temps3), variable_bornes_capteur(variable, start_date, end_date, 3), color='blue', label='capteur 3')
+    plt.plot(nouveau_temps(start_date, end_date, new_temps4), variable_bornes_capteur(variable, start_date, end_date, 4), color='red', label='capteur 4')
+    plt.plot(nouveau_temps(start_date, end_date, new_temps5), variable_bornes_capteur(variable, start_date, end_date, 5), color='magenta', label='capteur 5')
+    plt.plot(nouveau_temps(start_date, end_date, new_temps6), variable_bornes_capteur(variable, start_date, end_date, 6), color='forestgreen', label='capteur 6')
+    plt.legend(loc='upper right')
+    plt.show()
 
 
 
-def graphique2(variable, valeur, new_t):
-    p1 = plt.plot(new_t, variable, color="blue", linewidth=0.7, linestyle="-", label="variable en fonction du temps")
+sd,ed = '2019-08-12', '2019-08-15'
+
+
+def graphique_valeur(variable, valeur):
+    plt.plot(new_temps1,capteur(variable,1), color='orange', label='capteur 1') #on fait la même chose que dans graphique_par_capteur
+    plt.plot(new_temps2,capteur(variable,2), color='black', label='capteur 2')
+    plt.plot(new_temps3,capteur(variable,3), color='blue', label='capteur 3')
+    plt.plot(new_temps4,capteur(variable,4), color='red', label='capteur 4')
+    plt.plot(new_temps5,capteur(variable,5), color='magenta', label='capteur 5')
+    plt.plot(new_temps6,capteur(variable,6), color='forestgreen', label='capteur 6')
     a=valeur(variable)
-    val = [a]*len(new_t)
-    p2 = plt.plot(new_t, val, color="red", linewidth=0.7, linestyle="-", label="valeur")
+    val = [a]*len(new_temps1)
+    plt.plot(new_temps1, val, color="cyan", linewidth=0.7, linestyle="-", label="valeur")
     plt.legend(loc='upper right') #on ajoute une légende en haut à droite
     plt.show()
 
+def graphique_valeur_bornes(variable, valeur, start_date, end_date):
+    plt.plot(nouveau_temps(start_date, end_date, new_temps1), variable_bornes_capteur(variable, start_date, end_date, 1), color='orange', label='capteur 1') #on fait la même chose que dans graphique_par_capteur_bornes
+    plt.plot(nouveau_temps(start_date, end_date, new_temps2), variable_bornes_capteur(variable, start_date, end_date, 2), color='black', label='capteur 2')
+    plt.plot(nouveau_temps(start_date, end_date, new_temps3), variable_bornes_capteur(variable, start_date, end_date, 3), color='blue', label='capteur 3')
+    plt.plot(nouveau_temps(start_date, end_date, new_temps4), variable_bornes_capteur(variable, start_date, end_date, 4), color='red', label='capteur 4')
+    plt.plot(nouveau_temps(start_date, end_date, new_temps5), variable_bornes_capteur(variable, start_date, end_date, 5), color='magenta', label='capteur 5')
+    plt.plot(nouveau_temps(start_date, end_date, new_temps6), variable_bornes_capteur(variable, start_date, end_date, 6), color='forestgreen', label='capteur 6')
+    new_variable= []
+    for i in range(1,7): #on va mettre dans une même liste les valeurs des 6 capteurs
+        new_variable = new_variable + variable_bornes_capteur(variable, start_date, end_date, i) #on crée un nouvelle variable qui contient comme éléments les valeurs de la variable choisie par l'utilisateur entre les bornes qu'il a rentré
+    a = valeur(new_variable) #on prend la valeur voulue par rapport à la nouvelle variable
+    val= [a]*len(nouveau_temps(start_date, end_date, new_temps1))
+    plt.plot(nouveau_temps(start_date, end_date, new_temps1), val, color = 'cyan', label= 'valeur')
+    plt.legend(loc='upper right')
+    plt.show()
+
+
 #le programme précédent donne la valeur voulue par rapport à liste entière et ne prend pas en compte la nouvelle liste de temps
 
-def graphique_valeur_capteur(variable, capteur):
-    plt.plot(new_temps(i), capteur(variable,i))
-    plt.plot(new_temps(i),valeur)
-    plt.show()
+
+
 
 def indice_correlation(var1,var2):
     ind= var1.corr(var2, method= 'pearson') #on choisit la méthode pearson (la plus adaptée dans le cas présent)
-    print(ind)
+    print(ind) #on l'affiche dans la console
+    return ind #on utilise return pour pouvoir utiliser cette fonction plus tard
 
 moyenne = st.mean #on veut la moyenne arithmétique
 mediane = st.median
@@ -157,29 +215,45 @@ ecart_type = st.stdev
 
 
 def graph_corr(var1, var2):
-    p1=plt.plot(new_temps_tot, var1, color="blue")
-    p2=plt.plot(new_temps_tot,var2, color="orange")
+    plt.plot(new_temps_tot, var1, color="blue") #ici, on n'affiche tous les capteurs sans les distinguer
+    plt.plot(new_temps_tot,var2, color="orange")
     a=indice_correlation(var1, var2)
-    p3=plt.plot(new_temps_tot, a, color="red")
+    cor= [a]* len(new_temps_tot)
+    plt.plot(new_temps_tot, cor, color="red")
+    plt.suptitle("l'indice de corrélation vaut {}".format(a))
     plt.show()
 
 def graph_corr_capteur(var1, var2, numcapt):
-    plt.plot(temps(numcapteur), capteur(var1, numcapt), color="blue")
-    plt.plot(new_temps_tot,capteur(var2, numcapt), color="orange")
+    plt.plot(capteur(temps, numcapt), capteur(var1, numcapt), color="blue") #ici, on prend en compte un seul capteur
+    plt.plot(capteur(temps, numcapt),capteur(var2, numcapt), color="orange")
     a=indice_correlation(var1, var2)
-    print(len(var1))
-    plt.plot(new_temps_tot, cor, color="red")
+    cor = [a]*len(capteur(temps, numcapt))
+    plt.plot(capteur(temps, numcapt), cor, color="red")
+    plt.suptitle("l'indice de corrélation vaut {}".format(a))
     plt.show()
 
 
 def humidex(Ta,Hr):
-
     #Ta = température ambiante
     #Hr = humidité relative
-
     x=7.5*Ta/(237.7+Ta)
     y=6.112*Hr/100
-
     return(Ta+(y*(10**x)-10)*5/9)
 
+def L_humidex(i):
+    L=[]
+    temper= capteur(temperature, i)
+    humid = capteur(humidity, i)
+    for k in range(len(temper)):
+        L.append(humidex(temper[k],humid[k]))
+    return L
 
+def graphique_humidex():
+    plt.plot(new_temps1,L_humidex(1), color='orange', label='capteur 1')
+    plt.plot(new_temps2,L_humidex(2), color='black', label='capteur 2')
+    plt.plot(new_temps3,L_humidex(3), color='blue', label='capteur 3')
+    plt.plot(new_temps4,L_humidex(4), color='red', label='capteur 4')
+    plt.plot(new_temps5,L_humidex(5), color='magenta', label='capteur 5')
+    plt.plot(new_temps6,L_humidex(6), color='forestgreen', label='capteur 6')
+    plt.legend()
+    plt.show()

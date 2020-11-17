@@ -15,7 +15,7 @@ df = pd.read_csv("projet_td1/EIVP_KM1.csv", sep=';') #le fichier devient un data
 
 ##Extractions des colonnes
 
-id = df['id']
+Id = df['id']
 noise= df['noise'] #on extrait la colonne noise
 temperature = df['temp']
 humidity = df['humidity']
@@ -55,7 +55,6 @@ for k in range(len(temps)):
 
 def graphique_datetime(variable):
     plt.plot(new_temps,variable)
-    plt.title("graphique de la {} en fonction du temps".format(variable)) #on ajoute un titre  !!!!!
     plt.xlabel("temps")
     plt.ylabel("variable entrée")
     plt.show()
